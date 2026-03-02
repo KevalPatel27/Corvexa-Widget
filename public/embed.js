@@ -7,7 +7,7 @@
 
   // ==================== CONFIGURATIONs ====================
   const CONFIG = {
-    WIDGET_URL: "https://agorafrontend.gochatbot.live",
+    WIDGET_URL: "https://chatwidget.corvexa.cloud",
     BUBBLE_ID: "gochatbot-bubble",
     ICON_ID: "gochatbot-icon",
     IFRAME_ID: "gochatbot-iframe",
