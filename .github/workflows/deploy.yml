@@ -46,8 +46,11 @@ jobs:
 
       # 5. Trigger Dokploy to redeploy after image push
       - name: Trigger Dokploy Deployment
-        uses: dokploy/dokploy-action@v1
-        with:
-          dokployUrl: ${{ secrets.DOKPLOY_URL }}
-          apiKey: ${{ secrets.DOKPLOY_API_KEY }}
-          applicationId: ${{ secrets.DOKPLOY_APP_ID }}
+        run: |
+          curl -s -X POST \
+            'https://dashboard.corvexa.cloud/api/application.deploy' \
+            -H 'accept: application/json' \
+            -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
+            -H 'Content-Type: application/json' \
+            -d '{"applicationId": "mJmhem59qTnOMtSBZC6P2"}' \
+            -w "\nHTTP status: %{http_code}\n"
