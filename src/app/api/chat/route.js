@@ -4,14 +4,14 @@ import { errorResponse, handleBackendError, handleCatchError } from '../_lib/rou
 const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
 const API_KEY = process.env.API_KEY;
 
-if (!API_KEY) {
-  throw new Error('API_KEY environment variable is not set');
-}
-
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(request) {
+  if (!API_KEY) {
+    return errorResponse('Server configuration error', 500, 'API_KEY environment variable is not set');
+  }
+
   try {
     const { prompt, domain } = await request.json();
 
