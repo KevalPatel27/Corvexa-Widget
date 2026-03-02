@@ -43,3 +43,11 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:${{ github.sha }}
           platforms: linux/amd64
+
+      # 5. Trigger Dokploy to redeploy after image push
+      - name: Trigger Dokploy Deployment
+        uses: dokploy/dokploy-action@v1
+        with:
+          dokployUrl: ${{ secrets.DOKPLOY_URL }}
+          apiKey: ${{ secrets.DOKPLOY_API_KEY }}
+          applicationId: ${{ secrets.DOKPLOY_APP_ID }}
