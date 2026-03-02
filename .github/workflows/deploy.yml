@@ -43,17 +43,3 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:${{ github.sha }}
           platforms: linux/amd64
-
-      # 5. (Optional) Trigger a Dokploy deployment via API
-      #    Uncomment this step if you are using an external/private registry
-      #    that Dokploy cannot auto-pull from (see External Registry section in docs).
-      #    Secrets required:
-      #      DOKPLOY_URL        – e.g. https://deploy.yourdomain.com
-      #      DOKPLOY_API_KEY    – generated in Dokploy → Settings → API
-      #      DOKPLOY_APP_ID     – found in your Dokploy application URL
-      # - name: Trigger Dokploy Deployment
-      #   uses: dokploy/dokploy-action@v1
-      #   with:
-      #     dokployUrl: ${{ secrets.DOKPLOY_URL }}
-      #     apiKey: ${{ secrets.DOKPLOY_API_KEY }}
-      #     applicationId: ${{ secrets.DOKPLOY_APP_ID }}
