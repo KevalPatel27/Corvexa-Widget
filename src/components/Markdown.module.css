@@ -91,7 +91,7 @@
 }
 
 .markdownBody a {
-  color: #3592ce; /* former var(--primary-blue) */
+  color: #3592ce; /* formeasr var(--primary-blue) */
   text-decoration: none;
   transition: color 0.2s ease;
   font-weight: 500;
