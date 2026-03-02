@@ -1,0 +1,169 @@
+.chatbotContainer .chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--header_bg);
+  color: var(--header_text);
+  padding: 14px;  
+  border-radius: 20px 20px 0 0;
+  font-family: inherit;
+  position: relative;
+  min-height: 34px;
+}
+
+.chatbotContainer .chatbot-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.chatbotContainer .agent-avatar {
+  border-radius: 50%;
+  background: #fff;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  position: relative;
+}
+
+.chatbotContainer .agent-avatar::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background-color: #2ecc40;
+    border-radius: 50%;
+    bottom: 0;
+    right: 2px;
+    border: 1px solid #0359be;
+    z-index: 999999;
+}
+
+.chatbotContainer .agent-title {
+  color: var(--header_text);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.chatbotContainer .agent-badge {
+  background: #f87171;
+  color: #fff;
+  border-radius: 13px;
+  padding: 0 8px;
+  font-size: 13px;
+  margin-left: 9px;
+  font-weight: 600;
+  min-width: 28px;
+  text-align: center;
+  height: 20px;
+  line-height: 19px;
+  display: inline-block;
+}
+
+.chatbotContainer .chatbot-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.chatbotContainer .badge-right {
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+.chatbotContainer .closeIcon {
+  cursor: pointer;
+  padding-right: 15px;
+  display: flex;
+  align-items: center;
+}
+.chatbotContainer .closeIcon:hover {
+  transform: scale(1.12);
+  transition: transform 0.13s ease;
+}
+.chatbotContainer .closeIcon img {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(0%) sepia(95%) saturate(0%) hue-rotate(147deg) brightness(105%) contrast(106%);
+}
+.chatbot-marquee {
+  display: flex;
+  align-items: center;
+  position: relative;
+  top: 0;
+  color: var(--marque_text);
+  background: var(--marque_bg);
+  text-align: left;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Background overlay removed — using direct background-color instead */
+.chatbot-marquee > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Right blur edge */
+.chatbot-marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 31px;
+  height: 100%;
+  background: var(--marque_bg);
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.chatbot-marquee .icon-box {
+  width: 40px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chatbot-marquee .icon-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.chatbot-marquee .scroll-wrapper {
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.chatbot-marquee .scroll-wrapper ul {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+  list-style-type: disc;
+  white-space: nowrap;
+  animation: scroll-left 10s linear infinite;
+}
+
+.chatbot-marquee .scroll-wrapper li {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--marque_text, #1d1d1d);
+}
+
+.chatbot-marquee .scroll-wrapper li span a {
+  font-size: 20px;
+  font-weight: 700;
+  color: #005bc5;
+  text-decoration: underline;
+}
+
+/* @keyframes scroll-left is in src/styles/animations.css */

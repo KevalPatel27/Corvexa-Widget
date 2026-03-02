@@ -1,0 +1,211 @@
+.markdownBody {
+  font-family: inherit;
+  line-height: 1.4;
+  word-wrap: break-word;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.markdownBody h1,
+.markdownBody h2,
+.markdownBody h3,
+.markdownBody h4,
+.markdownBody h5,
+.markdownBody h6 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  line-height: 1.25;
+  font-size: inherit;
+  /* color: var(--dark-text); former var(--dark-text) */
+}
+
+.markdownBody h1 {
+  font-size: 18px;
+}
+.markdownBody h2 {
+  font-size: 16px;
+}
+.markdownBody h3 {
+  font-size: 15px;
+}
+.markdownBody h4 {
+  font-size: 14px;
+}
+.markdownBody h5,
+.markdownBody h6 {
+  font-size: 14px;
+}
+
+.markdownBody p {
+  /* margin: 13px 0;  */
+  line-height: 1.4;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* List Styles */
+.markdownBody ul {
+  list-style-type: disc;
+  margin: 13px 0;
+  padding-left: 32px;
+  line-height: 1.4;
+}
+.markdownBody ul li::marker {
+  font-size: 14px; /* match your li font-size */
+  vertical-align: text-top; /* push the bullet to the top */
+}
+
+/* Optional: reduce left indent if needed */
+.markdownBody ul {
+  padding-left: 24px; /* adjust so text lines up nicely */
+}
+.markdownBody ol {
+  list-style-type: decimal;
+  margin: 13px 0;
+  padding-left: 32px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.markdownBody li {
+  margin: 5px 0; /* 0.3em ~= 5px */
+  line-height: 1.4;
+  display: list-item;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Nested Lists */
+.markdownBody ul ul {
+  list-style-type: circle;
+}
+.markdownBody ul ul ul {
+  list-style-type: square;
+}
+.markdownBody ol ol {
+  list-style-type: lower-alpha;
+}
+.markdownBody ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.markdownBody a {
+  color: #3592ce; /* former var(--primary-blue) */
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-weight: 500;
+  position: relative;
+  /* padding-right: 19px; 1.2em = 19px */
+  font-size: 14px;
+}
+
+.markdownBody a:hover {
+  color: #48a6e6; /* former var(--light-blue) */
+  text-decoration: underline;
+}
+
+.markdownBody a:hover::after {
+  opacity: 1;
+}
+
+.markdownBody strong {
+  font-weight: 600;
+}
+
+.markdownBody em {
+  font-style: italic;
+}
+
+.markdownBody code {
+  background-color: #f0f0f0;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 12px;
+  color: #1f1f1f;
+}
+
+.markdownBody pre {
+  background-color: #f0f0f0;
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 16px 0;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+}
+
+.markdownBody pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 12px;
+}
+
+.markdownBody blockquote {
+  margin: 16px 0;
+  padding-left: 16px;
+  border-left: 4px solid #3592ce;
+  color: #7a7a7a;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.markdownBody hr {
+  margin: 24px 0; /* 1.5em = 24px */
+  border: none;
+  border-top: 1px solid #e0e0e0; /* var(--medium-gray) */
+}
+
+/* Special styling for source links */
+.markdownBody a[href^="http"] {
+  /* display: contents; */
+  margin: 3px 0; /* 0.2em = 3px */
+  color: #3592ce;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* List checkmarks: left as is, as no icons specified */
+.markdownBody ul li::before {
+  font-weight: bold;
+  display: inline-block;
+  width: 16px; /* 1em = 16px */
+  margin-left: -16px; /* -1em = -16px */
+}
+
+/* Important note boxes */
+.markdownBody .note {
+  background-color: #fff3cd;
+  border-left: 4px solid #366e8a;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+/* Success boxes */
+.markdownBody .success {
+  background-color: #d4edda;
+  border-left: 4px solid #3592ce;
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+/* Ensure max width and box-sizing for all children */
+.markdownBody * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.markdownBody > *:first-child {
+  margin-top: 0;
+}
+
+.markdownBody > *:last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,59 @@
+name: Build & Deploy – Corvexa Widget
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Docker Buildx (enables multi-platform + layer caching)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Log in to Docker Hub
+      #    Secrets required in GitHub → Settings → Secrets → Actions:
+      #      DOCKERHUB_USERNAME  – your Docker Hub username
+      #      DOCKERHUB_TOKEN     – a Docker Hub access token (not your password)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Build & push the image
+      #    Replace  <namespace>  with your Docker Hub username.
+      #    Replace  corvexa-widget  with your desired repository name.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          # Cache layers between runs to speed up builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:${{ github.sha }}
+          platforms: linux/amd64
+
+      # 5. (Optional) Trigger a Dokploy deployment via API
+      #    Uncomment this step if you are using an external/private registry
+      #    that Dokploy cannot auto-pull from (see External Registry section in docs).
+      #    Secrets required:
+      #      DOKPLOY_URL        – e.g. https://deploy.yourdomain.com
+      #      DOKPLOY_API_KEY    – generated in Dokploy → Settings → API
+      #      DOKPLOY_APP_ID     – found in your Dokploy application URL
+      # - name: Trigger Dokploy Deployment
+      #   uses: dokploy/dokploy-action@v1
+      #   with:
+      #     dokployUrl: ${{ secrets.DOKPLOY_URL }}
+      #     apiKey: ${{ secrets.DOKPLOY_API_KEY }}
+      #     applicationId: ${{ secrets.DOKPLOY_APP_ID }}

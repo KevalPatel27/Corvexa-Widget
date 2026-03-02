@@ -1,0 +1,649 @@
+/* Design tokens are imported via src/styles/tokens.css in layout.js */
+
+/* ── Shared button base ──────────────────────────────────────────────────── */
+.action-button,
+.supportForm button,
+.not-helpful-button,
+.inputForm .sendbtn {
+  border: none;
+  cursor: pointer;
+  transition: transform var(--transition-slow), box-shadow var(--transition-slow), border-color var(--transition-slow);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  text-align: center;
+}
+
+/* ── Shared input base ───────────────────────────────────────────────────── */
+.input,
+.supportForm input,
+.supportForm textarea {
+  outline: none;
+  transition: border-color var(--transition-base);
+  font-size: var(--font-size-base);
+  line-height: 100%;
+}
+
+/* ── Chatbot container ───────────────────────────────────────────────────── */
+.chatbotContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100dvh;
+  border-radius: var(--radius-xl);
+  position: fixed;
+  background-color: var(--chatbot_bg, #f3f3f3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Chatbot logo (sidebar avatar) ──────────────────────────────────────── */
+.chatbotlogo {
+  max-width: 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background-color: var(--light-text);
+  align-items: center;
+  display: flex;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── Messages container ──────────────────────────────────────────────────── */
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--chatbot_primary) transparent;
+  width: 100%;
+}
+
+.messagesContainer::-webkit-scrollbar {
+  width: 5px;
+}
+
+.messagesContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messagesContainer::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 2px;
+  transition: background-color var(--transition-slow);
+}
+
+.messagesContainer::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(62, 140, 243, 0.5);
+}
+
+.messagesContainer .chatbotlogo {
+  max-width: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+}
+
+.messagesContainer .chatbotReply {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* ── Message bubbles ─────────────────────────────────────────────────────── */
+.message {
+  max-width: 75%;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid #efefef;
+  font-size: var(--font-size-base);
+  background: var(--bot_bg, #ffffff);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+  color: var(--bot_text, #1a0726);
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
+}
+
+.message p {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.chatbotReply .message {
+  width: 100%;
+}
+
+.Defaultmsg {
+  margin-left: 50px;
+}
+
+/* ── User vs bot bubble variants ─────────────────────────────────────────── */
+.user {
+  align-self: flex-end;
+  background: var(--user_bg, #dedfff);
+  color: var(--user_text, #1a0726);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+  word-break: break-word;
+}
+
+.bot {
+  align-self: flex-start;
+  border-radius: var(--radius-lg);
+  background: var(--light-text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Markdown body (global override for ChatBot context) ─────────────────── */
+.markdownBody p {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+/* ── Message timestamp ───────────────────────────────────────────────────── */
+.message-timestamp {
+  font-size: var(--font-size-base);
+  color: var(--bot_text, #1a0726);
+  margin-top: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.user .message-timestamp {
+  text-align: right;
+  color: var(--user_text, #1a0726);
+}
+
+/* ── Action buttons (QA options) ─────────────────────────────────────────── */
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 7px;
+  border-radius: var(--radius-lg);
+  background-color: var(--button_bg);
+  color: var(--button_text);
+  font-size: var(--font-size-sm);
+  gap: var(--spacing-xs);
+  min-width: 75px;
+}
+
+.action-button:hover {
+  filter: brightness(1.1);
+}
+
+.action-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Action link ─────────────────────────────────────────────────────────── */
+.action-link {
+  display: inline-block;
+  color: var(--primary-blue);
+  background: transparent;
+  border: none;
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-base);
+}
+
+.action-link:hover,
+.action-link:focus {
+  color: var(--focus-blue);
+  text-decoration: none;
+  outline: none;
+}
+
+/* ── Dynamic QA content ──────────────────────────────────────────────────── */
+.initial-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.top-buttons-row,
+.middle-buttons-row {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.dynamic-options-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dynamic-content {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--dark-text);
+}
+
+.dynamic-links-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: 10px;
+}
+
+/* ── Support form ────────────────────────────────────────────────────────── */
+.supportForm {
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  margin-bottom: 10px;
+  border-radius: var(--radius-lg);
+  background: var(--bot_bg, var(--light-text));
+}
+
+.supportForm h3 {
+  color: var(--primary-blue);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 5px;
+  line-height: var(--line-height-base);
+}
+
+.supportForm input,
+.supportForm textarea {
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-blue);
+  background: #fafdff;
+  color: #70b2e2;
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+}
+
+.supportForm input:focus,
+.supportForm textarea:focus {
+  border: 1px solid var(--focus-blue);
+}
+
+.supportForm textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.supportForm .button-group {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.supportForm button {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: var(--radius-sm);
+  color: var(--light-text);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  border: 0.5px solid var(--dark-blue);
+}
+
+.supportForm button[type="submit"],
+.submitBtn {
+  background: var(--button_bg, var(--dark-blue));
+  color: var(--button_text, var(--light-text));
+}
+
+.supportForm button[type="submit"]:hover,
+.submitBtn:hover {
+  background: var(--button_bg, var(--dark-blue));
+  border-color: var(--button_bg, var(--dark-blue));
+  opacity: 0.8;
+}
+
+.supportForm button[type="submit"]:disabled,
+.submitBtn:disabled {
+  background: var(--button_bg, var(--dark-blue));
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.supportForm .cancelBtn {
+  background: transparent;
+  color: var(--button_text, var(--dark-text));
+  border: 1px solid var(--button_bg, var(--dark-blue));
+}
+
+.supportForm .cancelBtn:hover {
+  background: var(--button_bg, var(--dark-blue));
+  border: 1px solid var(--button_bg, var(--dark-blue));
+  opacity: 0.8;
+}
+
+.supportForm .cancelBtn:disabled {
+  background: var(--button_bg, var(--dark-blue));
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* ── Not helpful section ─────────────────────────────────────────────────── */
+.not-helpful-button {
+  background: var(--primary-yellow);
+  box-shadow: var(--shadow-sm);
+  padding: 10px 60px;
+  border-radius: 30px;
+  font-size: var(--font-size-base);
+  color: var(--dark-text);
+}
+
+.not-helpful-button:hover {
+  background-color: var(--light-yellow);
+}
+
+.not-helpful-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: var(--spacing-lg);
+}
+
+.not-helpful-section p {
+  margin: 0;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--dark-text);
+}
+
+/* ── Feedback icons ──────────────────────────────────────────────────────── */
+.icons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────────────────── */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--light-gray);
+  border-top: 3px solid var(--primary-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* @keyframes spin and dot-ellipsis-pulse are in src/styles/animations.css */
+
+/* ── Typing dots animation ───────────────────────────────────────────────── */
+.dot-ellipsis-anim {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: var(--spacing-xs);
+  vertical-align: middle;
+  min-height: 20px;
+}
+
+.dot-ellipsis-anim span {
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 50%;
+  display: inline-block;
+  animation: dot-ellipsis-pulse 0.25s infinite alternate;
+}
+
+.dot-ellipsis-anim span:nth-child(1) { animation-delay: 0s; }
+.dot-ellipsis-anim span:nth-child(2) { animation-delay: 0.08s; }
+.dot-ellipsis-anim span:nth-child(3) { animation-delay: 0.16s; }
+
+/* ── Input form ──────────────────────────────────────────────────────────── */
+.inputForm {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 15px 15px 0 15px;
+  margin-top: auto;
+}
+
+.input {
+  flex: 1;
+  padding: 17px 55px 17px 15px;
+  border: var(--chatbot_primary);
+  border-radius: 70px;
+  box-shadow: 0px 0px 14px 0px hsla(0, 0%, 0%, 0.15);
+  background: var(--light-text);
+  color: var(--gray-text);
+  font-weight: var(--font-weight-normal);
+  width: 100%;
+}
+
+.inputForm .sendbtn {
+  padding: 9px 8px;
+  border-radius: var(--radius-full);
+  position: absolute;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--chatbot_primary, #ed1566);
+  transition: color var(--transition-base), opacity var(--transition-base);
+}
+
+.sendbtn:hover {
+  opacity: 0.8;
+}
+
+/* Auto-grow textarea input */
+.inputForm .input.chatInputTextarea {
+  width: 100%;
+  padding: 17px 55px 17px 15px;
+  border: 1px solid #eaeaea;
+  border-radius: var(--radius-lg);
+  background: var(--light-text);
+  color: #888;
+  resize: none !important;
+  overflow: hidden !important;
+  transition: box-shadow var(--transition-fast);
+  outline: none;
+  box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
+  min-height: 50px;
+  max-height: 155px;
+  box-sizing: border-box;
+}
+
+.inputForm .input.chatInputTextarea:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Disabled states */
+.chatInput input:disabled,
+.chatInput button:disabled,
+.sendbtn.disabled,
+.input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Powered by footer ───────────────────────────────────────────────────── */
+.powered-by {
+  text-align: center;
+  font-weight: var(--font-weight-normal);
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  gap: 5px;
+  font-size: var(--font-size-sm);
+  color: #1d1d1d;
+}
+
+.powered-by img {
+  height: 18px;
+  vertical-align: middle;
+}
+
+.powered-by p {
+  display: flex;
+  letter-spacing: 0.5px;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Multibox (checkbox group) ───────────────────────────────────────────── */
+.db-select-multibox {
+  background: var(--light-text, #fff);
+  border: 1px solid var(--medium-gray);
+  padding: 18px 14px 12px;
+  border-radius: 14px;
+  margin: 18px auto 0;
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+  box-shadow: var(--shadow-sm);
+  width: 97%;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.db-select-multibox:hover {
+  border-color: var(--chatbot_primary, #6167f8);
+}
+
+.db-select-multibox label {
+  display: flex;
+  color: var(--dark-text);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+}
+
+.db-options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 7px;
+  margin-top: 7px;
+  align-items: flex-start;
+}
+
+.db-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) 6px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--chatbot_primary);
+  background: #fff;
+  transition: background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-fast);
+}
+
+.db-checkbox-label:hover,
+.db-checkbox-label:focus-within {
+  background: #f6f6ff;
+}
+
+.db-checkbox-label input[type="checkbox"] {
+  accent-color: var(--chatbot_primary, #6167f8);
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--chatbot_primary, #6167f8);
+  cursor: pointer;
+  transition: box-shadow var(--transition-base), transform var(--transition-fast);
+  background-color: #fff;
+}
+
+.db-checkbox-label input[type="checkbox"]:hover {
+  transform: scale(1.05);
+}
+
+.db-checkbox-label input[type="checkbox"]:checked {
+  background: var(--chatbot_primary, #6167f8);
+  color: var(--light-text, #fff);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) 6px;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+button.action-button.db-save {
+  max-width: 97%;
+  margin: 7px auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .action-link {
+    font-size: var(--font-size-base);
+    padding: 2px var(--spacing-xs);
+  }
+
+  .db-select-multibox {
+    padding: var(--spacing-md) 7px;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+  }
+
+  .db-options-row {
+    gap: 8px 10px;
+  }
+
+  .db-checkbox-label {
+    font-size: 13px;
+    padding: 6px 10px;
+    min-width: auto;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .db-checkbox-label input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 575px) {
+  .chatbotContainer .chatbot-header,
+  .chatbotContainer {
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Dynamic content inside .message (li lists in QA flow) ──────────────── */
+.dynamic-content li {
+  list-style: disc;
+  margin-left: 18px;
+  margin-top: 5px;
+  font-size: 13px;
+}
+/* ── iOS auto-zoom fix ───────────────────────────────────────────────────────
+   iOS Safari zooms in whenever a focused input/textarea has font-size < 16px.
+   We use (hover: none) and (pointer: coarse) instead of a max-width query
+   because the chatbot runs inside a 450px iframe — a width-based media query
+   would fire on desktop too. The pointer/hover combo reliably targets real
+   touch devices (phones/tablets) only, ignoring desktop inside a small iframe.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .inputForm .input.chatInputTextarea,
+  .supportForm input,
+  .supportForm textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

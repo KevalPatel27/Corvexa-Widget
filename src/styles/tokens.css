@@ -1,0 +1,75 @@
+/**
+ * Design Tokens — chatbot-adam
+ *
+ * Single source of truth for all design values.
+ * Import this file once in layout.js or globals.css.
+ */
+
+:root {
+  /* ── Brand palette ─────────────────────────────────────────────────────── */
+  --primary-blue:    hsla(204, 69%, 45%, 1);   /* #3592CE */
+  --light-blue:      rgb(72, 166, 230);
+  --dark-blue:       #1b82c4;
+  --focus-blue:      #7fccff;
+
+  --primary-yellow:  hsla(46, 88%, 60%, 1);    /* #F3CA3E */
+  --light-yellow:    rgb(250, 216, 106);
+
+  /* ── Neutral palette ───────────────────────────────────────────────────── */
+  --dark-text:       hsla(0, 0%, 12%, 1);      /* #1F1F1F */
+  --light-text:      hsla(0, 0%, 100%, 1);     /* #FFFFFF */
+  --gray-text:       hsla(0, 0%, 48%, 1);      /* #7A7A7A */
+  --light-gray:      #f0f0f0;
+  --medium-gray:     #e0e0e0;
+
+  /* ── Shadows ───────────────────────────────────────────────────────────── */
+  --shadow-sm:       0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  --shadow-md:       0 0 15px rgba(243, 202, 62, 0.3);
+  --shadow-lg:       0 0 20px rgba(243, 202, 62, 0.5);
+
+  /* ── Borders ───────────────────────────────────────────────────────────── */
+  --border-blue:       1px solid var(--primary-blue);
+  --border-light-blue: 0.2px solid hsla(203, 76%, 44%, 0.65);
+  --border-yellow:     1px solid var(--primary-yellow);
+
+  /* ── Spacing ───────────────────────────────────────────────────────────── */
+  --spacing-xs:  4px;
+  --spacing-sm:  8px;
+  --spacing-md:  12px;
+  --spacing-lg:  16px;
+  --spacing-xl:  24px;
+
+  /* ── Border radius ─────────────────────────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --font-size-xs:   11px;
+  --font-size-sm:   12px;
+  --font-size-base: 14px;
+  --font-size-md:   16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold:   600;
+  --line-height-base:   1.4;
+
+  /* ── Transitions ───────────────────────────────────────────────────────── */
+  --transition-fast:   0.15s ease;
+  --transition-base:   0.2s ease;
+  --transition-slow:   0.3s ease;
+
+  /* ── Dynamic chatbot theming (overridden at runtime by embed.js) ───────── */
+  --chatbot_bg:      #f3f3f3;
+  --chatbot_primary: transparent;
+  --button_bg:       #6167f8;
+  --button_text:     #ffffff;
+  --bot_bg:          #ffffff;
+  --bot_text:        #1a0726;
+  --user_bg:         #dedfff;
+  --user_text:       #1a0726;
+}

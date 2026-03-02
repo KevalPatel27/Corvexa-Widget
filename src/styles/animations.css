@@ -1,0 +1,60 @@
+/**
+ * Shared keyframe animations — chatbot-adam
+ *
+ * Import this file once in layout.js or globals.css.
+ * Individual components reference these animation names directly.
+ */
+
+/* ── Spinner ────────────────────────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Typing dots ────────────────────────────────────────────────────────── */
+@keyframes dot-ellipsis-pulse {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.3;
+    transform: translateY(-12px);
+  }
+}
+
+/* ── Fade in ────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Slide in from right ────────────────────────────────────────────────── */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Slide in from left ─────────────────────────────────────────────────── */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Shimmer (button hover) ─────────────────────────────────────────────── */
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* ── Marquee scroll (vertical) ──────────────────────────────────────────── */
+@keyframes marqueeScroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-33.33%); }
+}
+
+/* ── Marquee scroll (horizontal) ───────────────────────────────────────── */
+@keyframes scroll-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 30px)); }
+}
