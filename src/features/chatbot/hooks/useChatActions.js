@@ -17,6 +17,7 @@ export function useChatActions({
     setIntChat,
     setHasUserInteracted,
     startSupportFlow,
+    setSupportStep,
     requireIntentCheck,
     lastCrossQuestionContext,
     setRequireIntentCheck,
@@ -35,7 +36,8 @@ export function useChatActions({
             return;
         }
 
-        if (value === 'no_thanks' || value === 'No') {
+        if (value === 'no_thanks' || value === 'No') {           // Clear the support flow so subsequent typing goes to normal chat, not name/email handler
+            setSupportStep(null);
             delayedAppend([
                 { role: 'user', content: 'No, thanks', timestamp: new Date().toISOString() },
                 { role: 'bot', content: "Thank you for chatting with us today.\n\nYou’ve reached the daily message limit.\n\nPlease come back tomorrow or connect with support if you need immediate assistance.", timestamp: new Date().toISOString() },
@@ -89,7 +91,7 @@ export function useChatActions({
 
         // Default: send as a regular message
         await handleSend(value);
-    }, [domain, setMessages, setIsBotTyping, setIntChat, setHasUserInteracted, startSupportFlow, delayedAppend, handleSend]);
+    }, [domain, setMessages, setIsBotTyping, setIntChat, setHasUserInteracted, startSupportFlow, setSupportStep, delayedAppend, handleSend]);
 
     /**
      * Handle intent detection before sending a message.

@@ -156,7 +156,7 @@ export function useChatbot({
 
     const { handleOptionClick, checkIntentAndRoute } = useChatActions({
         domain, setMessages, setIsBotTyping, setIntChat, setHasUserInteracted,
-        startSupportFlow, requireIntentCheck, lastCrossQuestionContext,
+        startSupportFlow, setSupportStep, requireIntentCheck, lastCrossQuestionContext,
         setRequireIntentCheck, setLastCrossQuestionContext, delayedAppend, handleSend,
     });
 
