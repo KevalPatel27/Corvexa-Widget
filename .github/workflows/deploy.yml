@@ -41,16 +41,15 @@ jobs:
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:${{ github.sha }}
           platforms: linux/amd64
 
-      # 5. Trigger Dokploy to redeploy after image push
-      - name: Trigger Dokploy Deployment
-        run: |
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
-            "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
-          echo "Dokploy webhook response: $RESPONSE"
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Deployment trigger failed with HTTP status $RESPONSE"
-            exit 1
-          fi
+      # # 5. Trigger Dokploy to redeploy after image push
+      # - name: Trigger Dokploy Deployment
+      #   run: |
+      #     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+      #       "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
+      #     echo "Dokploy webhook response: $RESPONSE"
+      #     if [ "$RESPONSE" != "200" ]; then
+      #       echo "Deployment trigger failed with HTTP status $RESPONSE"
+      #       exit 1
+      #     fi
