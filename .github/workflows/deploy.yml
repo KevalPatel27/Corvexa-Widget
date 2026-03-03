@@ -9,47 +9,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Docker Buildx (enables multi-platform + layer caching)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3. Log in to Docker Hub
-      #    Secrets required in GitHub → Settings → Secrets → Actions:
-      #      DOCKERHUB_USERNAME  – your Docker Hub username
-      #      DOCKERHUB_TOKEN     – a Docker Hub access token (not your password)
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4. Build & push the image
-      #    Replace  <namespace>  with your Docker Hub username.
-      #    Replace  corvexa-widget  with your desired repository name.
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          # Cache layers between runs to speed up builds
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
           platforms: linux/amd64
 
-      # # 5. Trigger Dokploy to redeploy after image push
-      # - name: Trigger Dokploy Deployment
-      #   run: |
-      #     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
-      #       "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
-      #     echo "Dokploy webhook response: $RESPONSE"
-      #     if [ "$RESPONSE" != "200" ]; then
-      #       echo "Deployment trigger failed with HTTP status $RESPONSE"
-      #       exit 1
-      #     fi
+      - name: Trigger Dokploy Deployment
+        run: |
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+            "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
+          echo "Dokploy webhook response: $RESPONSE"
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Deployment trigger failed with HTTP status $RESPONSE"
+            exit 1
+          fi
