@@ -5,7 +5,7 @@
     return;
   }
 
-  // ==================== CONFIGURATIONs ====================
+  // ==================== CONFIGURATIONS ====================
   const CONFIG = {
     WIDGET_URL: "https://chatwidget.corvexa.cloud",
     BUBBLE_ID: "gochatbot-bubble",
