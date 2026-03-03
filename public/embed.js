@@ -302,7 +302,7 @@
       right: -2px;
       width: 18px;
       height: 18px;
-      background: #000000ff;
+      background: #39b80f;
       border-radius: 50%;
       border: 2px solid #ffffff;
       z-index: 2147483647;
