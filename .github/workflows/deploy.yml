@@ -33,12 +33,12 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/corvexa-widget:latest
           platforms: linux/amd64
 
-      - name: Trigger Dokploy Deployment
-        run: |
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
-            "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
-          echo "Dokploy webhook response: $RESPONSE"
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Deployment trigger failed with HTTP status $RESPONSE"
-            exit 1
-          fi
+      # - name: Trigger Dokploy Deployment
+      #   run: |
+      #     RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X GET \
+      #       "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
+      #     echo "Dokploy webhook response: $RESPONSE"
+      #     if [ "$RESPONSE" != "200" ]; then
+      #       echo "Deployment trigger failed with HTTP status $RESPONSE"
+      #       exit 1
+      #     fi
