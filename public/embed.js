@@ -41,6 +41,8 @@
     bubbleTimer: null,
     bubbleDismissed: false,
     isValidDomain: false,
+    isEnabled: false,
+    activeDays: {},
   };
 
   // ==================== DOMAIN VALIDATION ====================
@@ -171,6 +173,12 @@
 
         if (settingsData.mail) {
           state.mail = settingsData.mail;
+        }
+
+        // Store status and active days for gating
+        state.isEnabled = settingsData.status === "yes";
+        if (settingsData.days) {
+          state.activeDays = settingsData.days;
         }
       }
 
@@ -609,7 +617,18 @@
     // Step 2: Fetch chatbot data using validated backend domain
     await fetchChatbotData();
 
-    // Step 3: Create UI elements
+    // Step 3: Check if chatbot is enabled and today is an active day
+    if (!state.isEnabled) {
+      return;
+    }
+
+    const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const todayName = days[new Date().getDay()];
+    if (state.activeDays[todayName] === false) {
+      return;
+    }
+
+    // Step 4: Create UI elements
     injectStyles();
     createBubble();
     createIcon();

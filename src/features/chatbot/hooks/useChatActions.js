@@ -38,7 +38,7 @@ export function useChatActions({
         if (value === 'no_thanks' || value === 'No') {
             delayedAppend([
                 { role: 'user', content: 'No, thanks', timestamp: new Date().toISOString() },
-                { role: 'bot', content: 'No problem! Feel free to ask me anything else.', timestamp: new Date().toISOString() },
+                { role: 'bot', content: "Thank you for chatting with us today.\n\nYou’ve reached the daily message limit.\n\nPlease come back tomorrow or connect with support if you need immediate assistance.", timestamp: new Date().toISOString() },
             ]);
             return;
         }
@@ -59,7 +59,7 @@ export function useChatActions({
         if (value === 'randomquestionset_no') {
             setMessages(prev => [...prev,
             { role: 'user', content: 'No', timestamp: new Date().toISOString() },
-            { role: 'bot', content: 'No problem! Feel free to ask me anything else.', timestamp: new Date().toISOString() },
+            { role: 'bot', content: "Thank you for chatting with us today.\n\nYou’ve reached the daily message limit.\n\nPlease come back tomorrow or connect with support if you need immediate assistance.", timestamp: new Date().toISOString() },
             ]);
             return;
         }
