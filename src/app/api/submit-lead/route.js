@@ -1,6 +1,33 @@
 import { NextResponse } from 'next/server';
 import { errorResponse, handleBackendError, handleCatchError } from '../_lib/routeHelpers';
 
+/** Personal/free email domains to exclude from company name extraction */
+const PERSONAL_DOMAINS = new Set([
+    'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com',
+    'icloud.com', 'me.com', 'aol.com', 'protonmail.com', 'pm.me',
+    'zoho.com', 'yandex.com', 'mail.com', 'gmx.com', 'rediffmail.com',
+]);
+
+/**
+ * Extracts a company name from an email address.
+ * e.g. "john@acme-corp.com" → "Acme Corp"
+ * Returns null for personal email providers.
+ */
+function extractCompanyFromEmail(email) {
+    try {
+        const emailDomain = email.split('@')[1]?.toLowerCase();
+        if (!emailDomain || PERSONAL_DOMAINS.has(emailDomain)) return null;
+        // Strip TLD(s) - handle .co.uk, .com.au etc.
+        const namePart = emailDomain.split('.').slice(0, -1).join(' ');
+        // Capitalise each word and replace hyphens/underscores with spaces
+        return namePart
+            .replace(/[-_]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+    } catch {
+        return null;
+    }
+}
+
 const API_BASE_URL = process.env.API_BASE_URL;
 const API_KEY = process.env.API_KEY;
 
@@ -14,6 +41,9 @@ export async function POST(request) {
         const leadData = await request.json();
         const domain = request.headers.get('X-Client-Domain');
 
+        // Cloudflare automatically adds this header — 2-letter ISO country code (e.g. "IN", "US")
+        const country = request.headers.get('CF-IPCountry') || null;
+
         if (!domain) return errorResponse('Invalid request', 400, 'Domain is required');
         if (!leadData.session_id) return errorResponse('Invalid request', 400, 'Session ID is required');
         if (!leadData.name?.trim()) return errorResponse('Invalid request', 400, 'Name is required');
@@ -24,25 +54,58 @@ export async function POST(request) {
             return errorResponse('Invalid request', 400, 'Please provide a valid email address');
         }
 
-        const res = await fetch(`${API_BASE_URL}/submit-lead`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': API_KEY,
-                'X-Client-Domain': domain,
-            },
-            body: JSON.stringify({
-                session_id: leadData.session_id,
-                name: leadData.name,
-                email: leadData.email,
-                phone: leadData.phone || null,
-            }),
-            cache: 'no-store',
-        });
+        // Build the shared payload once — used by both endpoints
+        const companyName = extractCompanyFromEmail(leadData.email);
+        const leadPayload = {
+            session_id: leadData.session_id,
+            name: leadData.name,
+            email: leadData.email,
+            phone: leadData.phone || null,
+            interest_area: leadData.interest_area || null,
+            time_preference: leadData.time_preference || null,
+            country: country,
+            company_name: companyName,
+            page_url: leadData.hubspotTracking?.pageUrl || null,
+            page_name: leadData.hubspotTracking?.pageName || null,
+        };
 
+        const sharedHeaders = {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_KEY,
+            'X-Client-Domain': domain,
+        };
+
+        // Fire both backend calls in parallel — same payload, different endpoints
+        const [submitResult, emailResult] = await Promise.allSettled([
+            fetch(`${API_BASE_URL}/submit-lead`, {
+                method: 'POST',
+                headers: sharedHeaders,
+                body: JSON.stringify(leadPayload),
+                cache: 'no-store',
+            }),
+            fetch(`${API_BASE_URL}/lead-email`, {
+                method: 'POST',
+                headers: sharedHeaders,
+                body: JSON.stringify(leadPayload),
+                cache: 'no-store',
+            }),
+        ]);
+
+        // /submit-lead response is authoritative — check it first
+        if (submitResult.status === 'rejected') throw submitResult.reason;
+        const res = submitResult.value;
         if (!res.ok) return handleBackendError(res);
 
         const responseData = await res.json();
+
+        // Log /lead-email failure silently (never blocks the response)
+        if (emailResult.status === 'rejected') {
+            console.error('❌ Lead email error:', emailResult.reason);
+        } else if (!emailResult.value.ok) {
+            emailResult.value.json().catch(() => ({})).then(err =>
+                console.error('❌ Lead email failed:', { status: emailResult.value.status, error: err })
+            );
+        }
 
         // Submit to HubSpot (fire-and-forget — never fails the main request)
         submitToHubSpot(domain, leadData).catch((err) =>
@@ -83,6 +146,22 @@ async function submitToHubSpot(domain, leadData) {
 
     if (leadData.phone?.trim()) {
         fields.push({ name: 'phone', value: leadData.phone });
+    }
+    if (leadData.interest_area?.trim()) {
+        fields.push({ name: 'interest_area', value: leadData.interest_area });
+    }
+    if (leadData.time_preference?.trim()) {
+        fields.push({ name: 'time_preference', value: leadData.time_preference });
+    }
+    if (leadData.country?.trim()) {
+        fields.push({ name: 'country', value: leadData.country });
+    }
+    if (leadData.page_name?.trim()) {
+        fields.push({ name: 'page_name', value: leadData.page_name });
+    }
+    const company = extractCompanyFromEmail(leadData.email);
+    if (company) {
+        fields.push({ name: 'company', value: company });
     }
 
     const formData = { fields };

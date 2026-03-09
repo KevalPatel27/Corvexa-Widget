@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /**
  * Listens for postMessage events from the parent (embed.js).
@@ -79,8 +79,42 @@ export function useParentMessages({ isDomainValid, domain }) {
         return () => window.removeEventListener("message", handleMessage);
     }, [isDomainValid]);
 
+    /**
+     * Ask the parent (embed.js) for fresh HubSpot cookies + IP right now.
+     * Resolves with the fresh tracking object, or null if the parent doesn't
+     * respond within 3 seconds (e.g. direct-page load, no embed.js).
+     */
+    const requestFreshTracking = useCallback(() => {
+        return new Promise((resolve) => {
+            const timeout = setTimeout(() => {
+                window.removeEventListener('message', handler);
+                resolve(null); // fallback — use stored tracking
+            }, 3000);
+
+            function handler(event) {
+                if (event.data?.type === 'tracking-data-response') {
+                    clearTimeout(timeout);
+                    window.removeEventListener('message', handler);
+                    resolve(event.data.hubspotTracking);
+                }
+            }
+
+            window.addEventListener('message', handler);
+
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'request-tracking-data' }, '*');
+            } else {
+                // Not in an iframe — resolve immediately with null
+                clearTimeout(timeout);
+                window.removeEventListener('message', handler);
+                resolve(null);
+            }
+        });
+    }, []);
+
     return {
         user, logging, hubspotTracking, chatbotApiData,
         logo, headerIcon, chatbotColors, chatbotPosition, chatbotMail, frontendDomain,
+        requestFreshTracking,
     };
 }

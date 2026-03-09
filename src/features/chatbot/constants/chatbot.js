@@ -29,6 +29,8 @@ export const SUPPORT_STEPS = {
     NAME: 'name',
     EMAIL: 'email',
     PHONE: 'phone',
+    INTEREST_AREA: 'interest_area',
+    TIME_PREFERENCE: 'time_preference',
 };
 
 /** SSE event types from the backend */

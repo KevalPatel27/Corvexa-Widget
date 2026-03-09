@@ -22,6 +22,7 @@ export function useChatbot({
     domain,
     frontendDomain,
     hubspotTracking,
+    requestFreshTracking,
     qaData,
     user,
     colors,
@@ -59,7 +60,7 @@ export function useChatbot({
     } = useSupportFlow({
         domain, user, hubspotTracking, mail, storageKey: domain,
         setMessages, setIsBotTyping, delayedAppend,
-        initialState,
+        initialState, requestFreshTracking,
     });
 
     const {

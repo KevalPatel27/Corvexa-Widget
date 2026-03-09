@@ -495,6 +495,23 @@
       if (type === "open-chatbot") {
         openChat();
       }
+
+      // Iframe requests fresh tracking data right before lead submission
+      if (type === "request-tracking-data") {
+        (async () => {
+          const hubspotCookies = getHubSpotCookies();
+          const ipAddress = await getIPAddress();
+          iframe.contentWindow.postMessage({
+            type: "tracking-data-response",
+            hubspotTracking: {
+              cookies: hubspotCookies,
+              ipAddress,
+              pageUrl: window.location.href,
+              pageName: document.title,
+            },
+          }, "*");
+        })();
+      }
     });
 
     return iframe;

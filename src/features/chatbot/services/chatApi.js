@@ -11,11 +11,11 @@ import { API_MAX_RETRIES } from '../constants/chatbot';
 /**
  * Submit a lead to the backend.
  *
- * @param {{ sessionId: string, name: string, email: string, phone?: string, hubspotTracking?: object, domain: string }} params
+ * @param {{ sessionId: string, name: string, email: string, phone?: string, interestArea?: string, timePreference?: string, hubspotTracking?: object, domain: string }} params
  * @returns {Promise<{ thank_you_message?: string }>}
  * @throws {ApiError}
  */
-export async function submitLead({ sessionId, name, email, phone = '', hubspotTracking = null, domain }) {
+export async function submitLead({ sessionId, name, email, phone = '', interestArea = '', timePreference = '', hubspotTracking = null, domain }) {
     return apiPost(
         '/api/submit-lead',
         {
@@ -23,6 +23,8 @@ export async function submitLead({ sessionId, name, email, phone = '', hubspotTr
             name,
             email,
             phone,
+            interest_area: interestArea,
+            time_preference: timePreference,
             hubspotTracking,
         },
         { 'X-Client-Domain': domain },

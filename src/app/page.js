@@ -13,6 +13,7 @@ export default function Home() {
   const {
     user, logging, hubspotTracking, chatbotApiData,
     logo, headerIcon, chatbotColors, chatbotPosition, chatbotMail, frontendDomain,
+    requestFreshTracking,
   } = useParentMessages({ isDomainValid, domain });
 
   useTheme({ chatbotColors, isDomainValid });
@@ -49,6 +50,7 @@ export default function Home() {
         domain={domain}
         frontendDomain={frontendDomain}
         hubspotTracking={hubspotTracking}
+        requestFreshTracking={requestFreshTracking}
         qaData={qaData}
         qaLoading={qaLoading}
         qaError={qaError}

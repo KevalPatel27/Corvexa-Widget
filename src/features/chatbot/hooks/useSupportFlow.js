@@ -8,9 +8,9 @@ import { patchState } from '../../../lib/storage';
 
 /**
  * Manages the support lead-collection flow state machine.
- * Handles name → email → phone validation and lead submission.
+ * Steps: name → email → phone → interest_area → time_preference → submit
  *
- * @param {{ domain: string, user: object, hubspotTracking: object, mail: object, storageKey: string, setMessages: Function, setIsBotTyping: Function, delayedAppend: Function }} options
+ * @param {{ domain, user, hubspotTracking, mail, storageKey, setMessages, setIsBotTyping, delayedAppend, initialState, requestFreshTracking }} options
  */
 export function useSupportFlow({
     domain,
@@ -22,9 +22,12 @@ export function useSupportFlow({
     setIsBotTyping,
     delayedAppend,
     initialState,
+    requestFreshTracking,
 }) {
     const [supportStep, setSupportStep] = useState(initialState?.supportStep ?? null);
-    const [supportInfo, setSupportInfo] = useState(initialState?.supportInfo ?? { name: '', email: '', phone: '' });
+    const [supportInfo, setSupportInfo] = useState(
+        initialState?.supportInfo ?? { name: '', email: '', phone: '', interestArea: '', timePreference: '' }
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const emailNudgeTimer = useRef(null);
@@ -39,7 +42,7 @@ export function useSupportFlow({
                 : user?.name;
 
             setSupportStep(SUPPORT_STEPS.PHONE);
-            setSupportInfo({ name: userName, email: user.email, phone: '' });
+            setSupportInfo({ name: userName, email: user.email, phone: '', interestArea: '', timePreference: '' });
 
             delayedAppend([{
                 role: 'bot',
@@ -48,7 +51,7 @@ export function useSupportFlow({
             }]);
         } else {
             setSupportStep(SUPPORT_STEPS.NAME);
-            setSupportInfo({ name: '', email: '', phone: '' });
+            setSupportInfo({ name: '', email: '', phone: '', interestArea: '', timePreference: '' });
 
             delayedAppend([{
                 role: 'bot',
@@ -62,7 +65,7 @@ export function useSupportFlow({
     /** Exit the support flow and return to general chat. */
     const exitSupportFlow = useCallback((userInput = null) => {
         setSupportStep(null);
-        setSupportInfo({ name: '', email: '', phone: '' });
+        setSupportInfo({ name: '', email: '', phone: '', interestArea: '', timePreference: '' });
         delayedAppend([
             { role: 'user', content: userInput || 'Exit flow', timestamp: new Date().toISOString() },
             { role: 'bot', content: 'Looks like you want something else. Ask me anything!', timestamp: new Date().toISOString() },
@@ -75,6 +78,7 @@ export function useSupportFlow({
 
         if (!supportStep) return;
 
+        // ── NAME ─────────────────────────────────────────────────────────────
         if (supportStep === SUPPORT_STEPS.NAME) {
             const result = validateName(input);
             if (!result.valid) {
@@ -98,7 +102,7 @@ export function useSupportFlow({
             ]);
             setSupportStep(SUPPORT_STEPS.EMAIL);
 
-            // Nudge after 10s if user hasn't responded yet — injected directly like idle tour prompt
+            // Nudge after 10s if user hasn't responded
             if (emailNudgeTimer.current) clearTimeout(emailNudgeTimer.current);
             emailNudgeTimer.current = setTimeout(() => {
                 setMessages(prev => [...prev, {
@@ -111,8 +115,8 @@ export function useSupportFlow({
             return;
         }
 
+        // ── EMAIL ────────────────────────────────────────────────────────────
         if (supportStep === SUPPORT_STEPS.EMAIL) {
-            // Cancel the nudge timer — user has responded
             if (emailNudgeTimer.current) { clearTimeout(emailNudgeTimer.current); emailNudgeTimer.current = null; }
             const result = validateEmail(input);
             if (!result.valid) {
@@ -138,6 +142,7 @@ export function useSupportFlow({
             return;
         }
 
+        // ── PHONE ────────────────────────────────────────────────────────────
         if (supportStep === SUPPORT_STEPS.PHONE) {
             const result = validatePhone(input);
             if (!result.valid) {
@@ -149,11 +154,43 @@ export function useSupportFlow({
                 ]);
                 return;
             }
-
-            const phoneValue = result.value;
             setRetryCount(0);
             setSupportInfo(p => {
-                const next = { ...p, phone: phoneValue };
+                const next = { ...p, phone: result.value };
+                patchState(storageKey, { supportInfo: next });
+                return next;
+            });
+            delayedAppend([
+                { role: 'user', content: input, timestamp: new Date().toISOString() },
+                { role: 'bot', content: "Almost done! What area are you most interested in? *(e.g. Pricing, Features, Demo, Integration...)*", timestamp: new Date().toISOString() },
+            ]);
+            setSupportStep(SUPPORT_STEPS.INTEREST_AREA);
+            return;
+        }
+
+        // ── INTEREST AREA ────────────────────────────────────────────────────
+        if (supportStep === SUPPORT_STEPS.INTEREST_AREA) {
+            if (!input) return; // silently ignore blank input
+            setSupportInfo(p => {
+                const next = { ...p, interestArea: input };
+                patchState(storageKey, { supportInfo: next });
+                return next;
+            });
+            delayedAppend([
+                { role: 'user', content: input, timestamp: new Date().toISOString() },
+                { role: 'bot', content: "Great choice! What time works best for a callback? *(e.g. 2-3 PM, 4-5 PM, etc.)*", timestamp: new Date().toISOString() },
+            ]);
+            setSupportStep(SUPPORT_STEPS.TIME_PREFERENCE);
+            return;
+        }
+
+        // ── TIME PREFERENCE ──────────────────────────────────────────────────
+        if (supportStep === SUPPORT_STEPS.TIME_PREFERENCE) {
+            if (!input) return; // silently ignore blank input
+
+            const timeValue = input;
+            setSupportInfo(p => {
+                const next = { ...p, timePreference: timeValue };
                 patchState(storageKey, { supportInfo: next });
                 return next;
             });
@@ -167,14 +204,14 @@ export function useSupportFlow({
             { role: 'bot', content: '', hasReceivedContent: false, timestamp: new Date().toISOString() },
             ]);
 
-            // Submit lead
-            const nextInfo = { ...supportInfo, phone: phoneValue };
+            // Build the final info object synchronously
+            const nextInfo = { ...supportInfo, timePreference: timeValue };
             await _submitLead(nextInfo);
             setSupportStep(null);
         }
     }, [supportStep, supportInfo, retryCount, domain, user, hubspotTracking, storageKey, delayedAppend, exitSupportFlow, setMessages, setIsBotTyping]);
 
-    /** Internal lead submission — updates messages on success/failure. */
+    /** Internal lead submission — fetches fresh tracking data right before posting. */
     async function _submitLead(info) {
         setIsSubmitting(true);
         try {
@@ -183,6 +220,8 @@ export function useSupportFlow({
                 localStorage.getItem('user_name') || 'Guest';
             const email = info?.email?.trim() || user?.email || localStorage.getItem('user_email') || '';
             const phone = info?.phone?.trim() || '';
+            const interestArea = info?.interestArea?.trim() || '';
+            const timePreference = info?.timePreference?.trim() || '';
 
             if (!email) {
                 setMessages(prev => [...prev, {
@@ -195,7 +234,19 @@ export function useSupportFlow({
 
             const sessionId = localStorage.getItem('chatbot_session_id') || crypto.randomUUID();
 
-            const result = await submitLead({ sessionId, name, email, phone, hubspotTracking, domain });
+            // ── Fetch fresh tracking data right at submission time ──────────
+            let freshTracking = null;
+            if (typeof requestFreshTracking === 'function') {
+                freshTracking = await requestFreshTracking();
+            }
+            const trackingToUse = freshTracking ?? hubspotTracking;
+            // ────────────────────────────────────────────────────────────────
+
+            const result = await submitLead({
+                sessionId, name, email, phone,
+                interestArea, timePreference,
+                hubspotTracking: trackingToUse, domain,
+            });
 
             setMessages(prev => {
                 const updated = [...prev];
