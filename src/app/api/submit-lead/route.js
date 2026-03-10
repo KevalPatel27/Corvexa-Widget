@@ -67,6 +67,7 @@ export async function POST(request) {
             company_name: companyName,
             page_url: leadData.hubspotTracking?.pageUrl || null,
             page_name: leadData.hubspotTracking?.pageName || null,
+            mail: leadData.mail || null,
         };
 
         const sharedHeaders = {

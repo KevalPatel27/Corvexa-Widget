@@ -245,7 +245,7 @@ export function useSupportFlow({
             const result = await submitLead({
                 sessionId, name, email, phone,
                 interestArea, timePreference,
-                hubspotTracking: trackingToUse, domain,
+                hubspotTracking: trackingToUse, domain, mail
             });
 
             setMessages(prev => {
