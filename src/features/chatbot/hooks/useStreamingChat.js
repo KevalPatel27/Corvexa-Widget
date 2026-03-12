@@ -91,6 +91,7 @@ export function useStreamingChat({
             decoder: null,
         };
         let crossQuestion = '';
+        let triggeredFlow = false;
 
         try {
             const response = await streamChat({
@@ -139,6 +140,13 @@ export function useStreamingChat({
             let buffer = '';
             let streamingText = '';
             let finalAnswer = '';
+
+            // Add bot placeholder NOW (after response is confirmed OK, not before the fetch)
+            setMessages(prev => [...prev, {
+                role: 'bot', content: '', showNotHelpful: true,
+                hasReceivedContent: false, timestamp: new Date().toISOString(),
+            }]);
+            setIsBotTyping(true);
 
             backgroundStreamingRef.current.reader = reader;
             backgroundStreamingRef.current.decoder = decoder;
@@ -215,8 +223,13 @@ export function useStreamingChat({
                                     break;
 
                                 case SSE_EVENTS.REQUIRE_INTENT_CHECK:
-                                    setRequireIntentCheck(true);
-                                    setLastCrossQuestionContext(parsed.context || crossQuestion);
+                                    if (parsed.trigger_type === 'sales_question') {
+                                        triggeredFlow = true;
+                                        done = true; // stop reading the stream
+                                    } else {
+                                        setRequireIntentCheck(true);
+                                        setLastCrossQuestionContext(parsed.context || crossQuestion);
+                                    }
                                     break;
 
                                 case SSE_EVENTS.TRIGGER_LEAD:
@@ -249,6 +262,21 @@ export function useStreamingChat({
                         }
                     }
                 }
+            }
+
+            // If the support flow was triggered, clean up the placeholder and launch the flow.
+            // Skip all normal post-loop logic to avoid ghost error messages.
+            if (triggeredFlow) {
+                setMessages(prev => {
+                    const updated = [...prev];
+                    if (updated[updated.length - 1]?.role === 'bot' && !updated[updated.length - 1]?.content) {
+                        return updated.slice(0, -1);
+                    }
+                    return updated;
+                });
+                // Don't setIsBotTyping(false) here — startSupportFlow/delayedAppend manages it
+                startSupportFlow();
+                return;
             }
 
             // Cross-question: show with typing animation AFTER streaming is done
@@ -321,8 +349,8 @@ export function useStreamingChat({
             backgroundStreamingRef.current.reader = null;
             backgroundStreamingRef.current.decoder = null;
         } finally {
-            // Don't kill typing if delayedAppend is managing it for cross-question
-            if (!crossQuestion) setIsBotTyping(false);
+            // Don't kill typing if delayedAppend is managing it (cross-question or triggered flow)
+            if (!crossQuestion && !triggeredFlow) setIsBotTyping(false);
             setIsLoading(false);
             setIsRequestActive(false);
             setStreamingState({

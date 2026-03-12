@@ -43,6 +43,7 @@
     isValidDomain: false,
     isEnabled: false,
     activeDays: {},
+    leadGenerationOptions: null,
   };
 
   // ==================== DOMAIN VALIDATION ====================
@@ -128,18 +129,27 @@
           "Feel free to ask me anything.",
         ],
       };
+      state.leadGenerationOptions = [
+        "Check how we are better than others",
+        "Book a Demo",
+        "Real estate investor portal",
+        "Connect with a human"
+      ];
       return;
     }
 
     try {
       // Use backendDomain for API calls
-      const [settingsRes, messagesRes] = await Promise.all([
+      const [settingsRes, messagesRes, leadGenRes] = await Promise.all([
         fetch(
           `https://${config.backendDomain}/wp-json/chatbot/v1/settings-frontend`
         ),
         fetch(
           `https://${config.backendDomain}/wp-json/chatbot/v1/chatbot-messages`
         ),
+        fetch(
+          `https://${config.backendDomain}/wp-json/chatbot/v1/lead-generation`
+        )
       ]);
 
       // Process settings API
@@ -187,6 +197,14 @@
         const messagesData = await messagesRes.json();
         if (messagesData.success && messagesData.data) {
           state.messages = messagesData.data;
+        }
+      }
+
+      // Process lead generation API
+      if (leadGenRes?.ok) {
+        const leadGenData = await leadGenRes.json();
+        if (leadGenData.success && Array.isArray(leadGenData.data) && leadGenData.data.length > 0) {
+          state.leadGenerationOptions = leadGenData.data;
         }
       }
     } catch (err) {
@@ -283,6 +301,71 @@
 
     .chatbot-close-btn:hover { filter: brightness(1.1); }
     .chatbot-close-btn img { width: 100%; height: 100%; object-fit: contain;filter: brightness(0) saturate(100%);}
+
+    #${CONFIG.BUBBLE_ID}.has-options {
+      align-items: ${state.position === "left" ? "flex-start" : "flex-end"};
+      gap: 12px;
+    }
+
+    .chatbot-option-bubble {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 12px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: max-content;
+      max-width: 250px;
+    }
+    .chatbot-option-bubble:first-child {
+      border-radius: 20px 20px 5px 20px;
+    }
+
+    .chatbot-option-bubble:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .chatbot-option-bubble.has-close {
+      padding-right: 40px; /* space for close btn */
+    }
+
+    .chatbot-option-text {
+      color: #33475b;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .chatbot-option-close-btn {
+      background: #fff;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: -40px;
+      right: 0;
+      padding: 0;
+    }
+
+    .chatbot-option-close-btn:hover {
+      background: #f1f1f1;
+    }
+
+    .chatbot-option-close-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: #333;
+    }
 
     #${CONFIG.ICON_ID} {
       position: fixed;
@@ -385,18 +468,61 @@
   function createBubble() {
     const bubble = document.createElement("div");
     bubble.id = CONFIG.BUBBLE_ID;
-    bubble.innerHTML = `
-      <div class="chatbot-bubble-content">
-        <span class="chatbot-message-text" id="bubble-text"></span>
-        <div class="chatbot-close-btn"><img src=${state.close} alt="close"></img></div>
-      </div>
-    `;
-    document.body.appendChild(bubble);
 
-    bubble.querySelector(".chatbot-close-btn").addEventListener("click", () => {
-      hideBubble();
-      state.bubbleDismissed = true;
-    });
+    if (state.leadGenerationOptions && state.leadGenerationOptions.length > 0) {
+      bubble.classList.add("has-options");
+      let html = "";
+      state.leadGenerationOptions.forEach((opt, idx) => {
+        const isFirst = idx === 0;
+        const classes = isFirst ? "chatbot-option-bubble has-close" : "chatbot-option-bubble";
+        html += `
+          <div class="${classes}" data-text="${opt.replace(/"/g, '&quot;')}">
+            <span class="chatbot-option-text">${opt}</span>
+            ${isFirst ? `
+            <button class="chatbot-option-close-btn" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>` : ''}
+          </div>
+        `;
+      });
+      bubble.innerHTML = html;
+
+      // Close button handler
+      const closeBtn = bubble.querySelector(".chatbot-option-close-btn");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          hideBubble();
+          state.bubbleDismissed = true;
+        });
+      }
+
+      // Option click handler
+      const options = bubble.querySelectorAll(".chatbot-option-bubble");
+      options.forEach(opt => {
+        opt.addEventListener("click", (e) => {
+          if (e.target.closest('.chatbot-option-close-btn')) return;
+          const text = opt.getAttribute("data-text");
+          openChat(text);
+          hideBubble();
+          state.bubbleDismissed = true;
+        });
+      });
+    } else {
+      bubble.innerHTML = `
+        <div class="chatbot-bubble-content">
+          <span class="chatbot-message-text" id="bubble-text"></span>
+          <div class="chatbot-close-btn"><img src="${state.close}" alt="close"></img></div>
+        </div>
+      `;
+
+      bubble.querySelector(".chatbot-close-btn").addEventListener("click", () => {
+        hideBubble();
+        state.bubbleDismissed = true;
+      });
+    }
+
+    document.body.appendChild(bubble);
 
     return bubble;
   }
@@ -547,7 +673,7 @@
   }
 
   // ==================== CHAT CONTROLS ====================
-  function openChat() {
+  function openChat(text = null) {
     state.isChatOpen = true;
     const iframe = document.getElementById(CONFIG.IFRAME_ID);
     const icon = document.getElementById(CONFIG.ICON_ID);
@@ -565,10 +691,17 @@
       console.log('[embed.js] postMessage → open-chatbot');
       iframe.contentWindow.postMessage({ type: "open-chatbot" }, "*");
 
-      setTimeout(() => {
-        console.log('[embed.js] postMessage → focus-input');
-        iframe.contentWindow.postMessage({ type: "focus-input" }, "*");
-      }, 200);
+      if (text && typeof text === 'string') {
+        setTimeout(() => {
+          console.log('[embed.js] postMessage → send-user-message');
+          iframe.contentWindow.postMessage({ type: "send-user-message", message: text }, "*");
+        }, 500);
+      } else {
+        setTimeout(() => {
+          console.log('[embed.js] postMessage → focus-input');
+          iframe.contentWindow.postMessage({ type: "focus-input" }, "*");
+        }, 200);
+      }
     }, 100);
   }
 
@@ -595,7 +728,9 @@
     if (bubble) {
       bubble.classList.add("visible");
       state.isBubbleVisible = true;
-      startTypingAnimation();
+      if (!state.leadGenerationOptions || state.leadGenerationOptions.length === 0) {
+        startTypingAnimation();
+      }
     }
   }
 

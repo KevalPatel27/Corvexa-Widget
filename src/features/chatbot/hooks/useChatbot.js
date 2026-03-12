@@ -126,13 +126,7 @@ export function useChatbot({
         setIsLoading(true);
         setUserScrolledUp(false);
 
-        // Add bot placeholder
-        setMessages(prev => [...prev, {
-            role: 'bot', content: '', showNotHelpful: true,
-            hasReceivedContent: false, timestamp: new Date().toISOString(),
-        }]);
-        setIsBotTyping(true);
-
+        // Bot placeholder is added inside sendStreamingMessage after the response arrives
         await sendStreamingMessage(lowerInput, originalInput, sessionId);
     }, [
         supportStep, hasUserInteracted, requireIntentCheck, lastCrossQuestionContext,
@@ -176,10 +170,10 @@ export function useChatbot({
 
     // ── Effects ───────────────────────────────────────────────────────────────
 
-    // postMessage: open/close/focus
+    // postMessage: open/close/focus/send-user-message
     useEffect(() => {
         const handleMessage = (event) => {
-            const { type } = event.data || {};
+            const { type, message } = event.data || {};
             if (type === 'open-chatbot') setIsChatOpen(true);
             if (type === 'close-chatbot') setIsChatOpen(false);
             if (type === 'focus-input') {
@@ -187,10 +181,13 @@ export function useChatbot({
                     document.querySelector('.chatInputTextarea')?.focus();
                 }, 100);
             }
+            if (type === 'send-user-message' && message) {
+                handleSend(message);
+            }
         };
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-    }, []);
+    }, [handleSend]);
 
     // postMessage: close during active request → background streaming
     useEffect(() => {
