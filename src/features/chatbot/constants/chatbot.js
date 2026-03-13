@@ -26,6 +26,8 @@ export const IFRAME_LOAD_DELAY_MS = 2000;
 
 /** Support flow steps */
 export const SUPPORT_STEPS = {
+    SUBMITTED_CONFIRM: 'submitted_confirm',  // re-entry after a completed lead
+    RESUME_CONFIRM: 'resume_confirm',         // re-entry with partial data
     NAME: 'name',
     EMAIL: 'email',
     PHONE: 'phone',

@@ -50,7 +50,7 @@ export async function POST(request) {
         if (!leadData.email?.trim()) return errorResponse('Invalid request', 400, 'Email is required');
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(leadData.email)) {
+        if (leadData.email !== 'N/A' && !emailRegex.test(leadData.email)) {
             return errorResponse('Invalid request', 400, 'Please provide a valid email address');
         }
 
