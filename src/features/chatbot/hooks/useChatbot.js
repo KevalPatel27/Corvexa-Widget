@@ -126,7 +126,13 @@ export function useChatbot({
         setIsLoading(true);
         setUserScrolledUp(false);
 
-        // Bot placeholder is added inside sendStreamingMessage after the response arrives
+        // Add bot placeholder immediately so typing dots animation shows during the API call
+        setMessages(prev => [...prev, {
+            role: 'bot', content: '', showNotHelpful: true,
+            hasReceivedContent: false, timestamp: new Date().toISOString(),
+        }]);
+        setIsBotTyping(true);
+
         await sendStreamingMessage(lowerInput, originalInput, sessionId);
     }, [
         supportStep, hasUserInteracted, requireIntentCheck, lastCrossQuestionContext,

@@ -104,6 +104,7 @@ export function useStreamingChat({
 
             // Handle rate limit specially (show options)
             if (response.status === 429) {
+                // Replace the bot placeholder with the error message
                 setMessages(prev => [...prev.slice(0, -1), {
                     role: 'bot',
                     content: "That's all the messages for today. How would you like to continue?",
@@ -122,6 +123,7 @@ export function useStreamingChat({
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+                // Replace the bot placeholder with the error message
                 setMessages(prev => [...prev.slice(0, -1), {
                     role: 'bot',
                     content: `${errorData.detail || 'An error occurred. Please try again.'}`,
@@ -141,13 +143,7 @@ export function useStreamingChat({
             let streamingText = '';
             let finalAnswer = '';
 
-            // Add bot placeholder NOW (after response is confirmed OK, not before the fetch)
-            setMessages(prev => [...prev, {
-                role: 'bot', content: '', showNotHelpful: true,
-                hasReceivedContent: false, timestamp: new Date().toISOString(),
-            }]);
-            setIsBotTyping(true);
-
+            // Note: bot placeholder was already added in handleSend before the fetch
             backgroundStreamingRef.current.reader = reader;
             backgroundStreamingRef.current.decoder = decoder;
 
